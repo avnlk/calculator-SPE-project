@@ -1,0 +1,9 @@
+# Ignore build artifacts
+calculator
+test_runner
+*.o
+
+# Ignore IDE and editor files
+.vscode/
+*.swp
+*~
