@@ -57,7 +57,13 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'ansible-playbook -i inventory.ini deploy.yml'
+                sh 'ansible-playbook -i inventory.ini ansible/deploy.yml'
+            }
+        }
+        
+        stage('Validation') {
+            steps {
+                sh 'ansible-playbook ansible/validate_calculator.yml -i ansible/inventory.ini'
             }
         }
 

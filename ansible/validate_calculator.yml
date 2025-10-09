@@ -1,0 +1,11 @@
+- name: Validate Calculator
+  hosts: target
+  tasks:
+    - name: Run calculator with sample input
+      command: "docker exec calculator /app/build/calculator"
+      register: result
+      ignore_errors: yes
+
+    - name: Print output
+      debug:
+        msg: "{{ result.stdout }}"
