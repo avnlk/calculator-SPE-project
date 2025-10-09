@@ -1,0 +1,23 @@
+# deploy.yml
+- hosts: app_servers
+  become: yes
+  tasks:
+    - name: Pull latest Docker image
+      docker_image:
+        name: avnlk/calculator
+        tag: latest
+        source: pull
+
+    - name: Stop and remove old container
+      docker_container:
+        name: calculator
+        state: absent
+
+    - name: Run new container
+      docker_container:
+        name: calculator
+        image: avnlk/calculator:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:8080"
