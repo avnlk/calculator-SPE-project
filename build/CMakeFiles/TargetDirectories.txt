@@ -1,0 +1,5 @@
+/home/lokesh/Desktop/calculator_SPE_project/build/CMakeFiles/calculator.dir
+/home/lokesh/Desktop/calculator_SPE_project/build/CMakeFiles/runTests.dir
+/home/lokesh/Desktop/calculator_SPE_project/build/CMakeFiles/test.dir
+/home/lokesh/Desktop/calculator_SPE_project/build/CMakeFiles/edit_cache.dir
+/home/lokesh/Desktop/calculator_SPE_project/build/CMakeFiles/rebuild_cache.dir
