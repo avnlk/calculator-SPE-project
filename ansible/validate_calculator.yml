@@ -1,12 +1,12 @@
 ---
 - name: Validate Calculator
-  hosts: localhost
-  become: yes
+  hosts: app_servers
+  become: true
   tasks:
 
     - name: Run calculator container with sample input
       shell: |
-        docker exec calculator /app/build/calculator <<< "2 + 3"
+        docker exec calculator /app/build/calculator <<< "2 + 2"
       register: calc_output
       ignore_errors: yes
 

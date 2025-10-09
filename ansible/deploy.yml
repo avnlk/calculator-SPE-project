@@ -1,28 +1,27 @@
 ---
 - name: Deploy Calculator Docker container
-  hosts: localhost
-  become: yes
+  hosts: app_servers
+  become: true
   tasks:
 
     - name: Pull latest calculator image
-      docker_image:
+      community.docker.docker_image:
         name: avnlk/calculator
         tag: latest
         source: pull
 
     - name: Remove old container if exists
-      docker_container:
+      community.docker.docker_container:
         name: calculator
         state: absent
-      ignore_errors: yes
+        force_kill: yes
 
     - name: Run calculator container
-      docker_container:
+      community.docker.docker_container:
         name: calculator
         image: avnlk/calculator:latest
         state: started
         restart_policy: unless-stopped
+        command: "./calculator"
+        working_dir: "/app/build"
         tty: yes
-        detach: yes
-        volumes:
-          - ./build:/app/build   # optional: mount build if you want to debug
