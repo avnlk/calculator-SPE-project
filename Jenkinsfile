@@ -1,19 +1,25 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = "avnlk/calculator:latest"
+        BUILD_DIR = "build"
+    }
+
     stages {
         stage('Checkout') {
             steps {
-		git branch: 'main', url: 'https://github.com/avnlk/calculator-SPE-project.git'
+                git branch: 'main', url: 'https://github.com/avnlk/calculator-SPE-project.git'
             }
         }
 
         stage('Build') {
             steps {
                 sh '''
-                rm -rf build
-                mkdir build
-                cd build
+                # Cleanup previous build
+                rm -rf $BUILD_DIR
+                mkdir $BUILD_DIR
+                cd $BUILD_DIR
                 cmake ..
                 make
                 '''
@@ -23,7 +29,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                cd build
+                cd $BUILD_DIR
                 ctest --output-on-failure
                 '''
             }
@@ -31,7 +37,10 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t avnlk/calculator:latest .'
+                sh '''
+                docker rmi -f $DOCKER_IMAGE || true
+                docker build -t $DOCKER_IMAGE .
+                '''
             }
         }
 
@@ -40,7 +49,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    docker push avnlk/calculator:latest
+                    docker push $DOCKER_IMAGE
                     '''
                 }
             }
@@ -51,11 +60,13 @@ pipeline {
         always {
             echo 'Pipeline finished.'
         }
+
         success {
             mail to: 'lokeshkumar.aravapalli@iiitb.ac.in',
-                subject: "Pipeline Success: ${env.JOB_NAME}",
-                body: "Build and deployment successful."
+                 subject: "Pipeline Success: ${env.JOB_NAME}",
+                 body: "Build, test, and Docker deployment successful."
         }
+
         failure {
             mail to: 'lokeshkumar.aravapalli@iiitb.ac.in',
                  subject: "Pipeline Failed: ${env.JOB_NAME}",
@@ -63,4 +74,3 @@ pipeline {
         }
     }
 }
-    
