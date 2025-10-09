@@ -10,7 +10,13 @@
         tag: latest
         source: pull
 
-    - name: Remove old container if exists
+    - name: Stop calculator container if running
+      community.docker.docker_container:
+        name: calculator
+        state: stopped
+        timeout: 10
+
+    - name: Remove old container
       community.docker.docker_container:
         name: calculator
         state: absent
@@ -22,6 +28,7 @@
         image: avnlk/calculator:latest
         state: started
         restart_policy: unless-stopped
-        command: "./calculator"
+        command: "/app/build/calculator"
         working_dir: "/app/build"
+        detach: yes
         tty: yes

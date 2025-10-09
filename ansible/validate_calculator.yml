@@ -1,15 +1,22 @@
 ---
 - name: Validate Calculator
   hosts: app_servers
-  become: true
+  gather_facts: yes
   tasks:
 
     - name: Run calculator container with sample input
       shell: |
-        docker exec calculator /app/build/calculator <<< "2 + 2"
+        printf "3\n12\n5\n" | docker exec -i calculator /app/build/calculator
       register: calc_output
       ignore_errors: yes
 
-    - name: Print output
+    - name: Print calculator output
       debug:
         msg: "{{ calc_output.stdout }}"
+
+    - name: Check for expected output (ln(12))
+      assert:
+        that:
+          - "'ln(12) =' in calc_output.stdout"
+        fail_msg: "Calculator output did not contain expected result!"
+        success_msg: "Calculator ran successfully and returned expected output."
