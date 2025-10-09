@@ -4,6 +4,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = "avnlk/calculator:latest"
         BUILD_DIR = "build"
+        LANG = "en_US.UTF-8"
+        LC_ALL = "en_US.UTF-8"
     }
 
     stages {
