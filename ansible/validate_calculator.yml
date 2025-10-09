@@ -1,11 +1,15 @@
+---
 - name: Validate Calculator
-  hosts: target
+  hosts: localhost
+  become: yes
   tasks:
-    - name: Run calculator with sample input
-      command: "docker exec calculator /app/build/calculator"
-      register: result
+
+    - name: Run calculator container with sample input
+      shell: |
+        docker exec calculator /app/build/calculator <<< "2 + 3"
+      register: calc_output
       ignore_errors: yes
 
     - name: Print output
       debug:
-        msg: "{{ result.stdout }}"
+        msg: "{{ calc_output.stdout }}"

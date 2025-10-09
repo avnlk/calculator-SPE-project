@@ -1,23 +1,28 @@
-# deploy.yml
-- hosts: app_servers
+---
+- name: Deploy Calculator Docker container
+  hosts: localhost
   become: yes
   tasks:
-    - name: Pull latest Docker image
+
+    - name: Pull latest calculator image
       docker_image:
         name: avnlk/calculator
         tag: latest
         source: pull
 
-    - name: Stop and remove old container
+    - name: Remove old container if exists
       docker_container:
         name: calculator
         state: absent
+      ignore_errors: yes
 
-    - name: Run new container
+    - name: Run calculator container
       docker_container:
         name: calculator
         image: avnlk/calculator:latest
         state: started
-        restart_policy: always
-        ports:
-          - "8080:8080"
+        restart_policy: unless-stopped
+        tty: yes
+        detach: yes
+        volumes:
+          - ./build:/app/build   # optional: mount build if you want to debug
