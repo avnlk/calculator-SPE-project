@@ -7,3 +7,21 @@ test_runner
 .vscode/
 *.swp
 *~
+
+# Build directories
+/build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+*.obj
+*.exe
+
+# IDE files (optional, adjust to your IDE)
+*.vscode/
+*.idea/
+
+# Google Test outputs
+*.log
+
