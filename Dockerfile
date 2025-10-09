@@ -10,7 +10,7 @@ WORKDIR /app
 COPY . /app
 
 # Build calculator
-RUN mkdir build && cd build && cmake .. && make
+RUN mkdir -p build && cd build && cmake .. && make
 
 # Default command
 CMD ["./build/calculator"]
