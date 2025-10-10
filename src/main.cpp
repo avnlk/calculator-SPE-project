@@ -5,11 +5,6 @@
 #include "ln_func.h"
 #include "power_func.h"
 
-void clearInput() {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-
 int main() {
     int choice;
     while (true) {
@@ -21,12 +16,6 @@ int main() {
         std::cout << "5. Exit\n";
         std::cout << "Select option: ";
         std::cin >> choice;
-
-        if (std::cin.fail()) {
-            clearInput();
-            std::cout << "Invalid input. Try again.\n";
-            continue;
-        }
 
         if (choice == 5) {
             std::cout << "Goodbye!!!\n";
