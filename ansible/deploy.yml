@@ -28,7 +28,8 @@
         image: avnlk/calculator:latest
         state: started
         restart_policy: unless-stopped
-        command: "/app/build/calculator"
-        working_dir: "/app/build"
+        command: "/app/calculator"
+        working_dir: "/app"
         detach: yes
         tty: yes
+        stdin_open: yes   # required for interactive containers

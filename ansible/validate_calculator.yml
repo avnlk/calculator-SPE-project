@@ -6,7 +6,7 @@
 
     - name: Run calculator container with sample input
       shell: |
-        printf "3\n12\n5\n" | docker exec -i calculator /app/build/calculator
+        printf "3\n12\n5\n" | docker exec -i calculator /app/calculator
       register: calc_output
       ignore_errors: yes
 
