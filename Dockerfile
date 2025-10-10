@@ -4,21 +4,23 @@ FROM alpine:3.20 AS builder
 # Install compiler and build tools
 RUN apk add --no-cache g++ cmake make
 
-# Copy calculator source
+# Copy calculator source code
 WORKDIR /app
 COPY . .
 
-# Build the calculator as a fully static binary
-RUN mkdir build && cd build && cmake .. && \
-    make calculator LDFLAGS="-static"
+# Build calculator only
+RUN mkdir build && cd build && cmake .. && make
 
 # ===== STAGE 2: RUNTIME =====
-FROM scratch
+FROM alpine:3.20
+
+# Install C++ runtime libraries
+RUN apk add --no-cache libstdc++ libgcc
 
 WORKDIR /app
 
-# Copy the fully static calculator binary
+# Copy only the compiled binary
 COPY --from=builder /app/build/calculator .
 
-# Run the calculator
+# Set default command
 CMD ["./calculator"]
