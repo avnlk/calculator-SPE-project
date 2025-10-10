@@ -1,16 +1,38 @@
-FROM ubuntu:22.04
+# =========================
+# Stage 1: Build
+# =========================
+FROM gcc:11 AS builder
 
-# Install build tools
+# Install required build tools and libraries
 RUN apt-get update && \
-    apt-get install -y g++ cmake make libgtest-dev && \
+    apt-get install -y cmake make libgtest-dev && \
     rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
 
-# Copy source files only
-COPY . /app
+# Copy all project files
+COPY . .
 
-# Build the project
+# Build the calculator
 RUN mkdir build && cd build && cmake .. && make
 
-CMD ["./build/calculator"]
+# =========================
+# Stage 2: Runtime
+# =========================
+# Use a super lightweight base image
+FROM debian:bullseye-slim
+
+# Create app directory
+WORKDIR /app
+
+# Copy only the final executable (and any runtime dependencies)
+COPY --from=builder /app/build/calculator ./calculator
+
+# Install only minimal runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libstdc++6 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Run the calculator app
+CMD ["./calculator"]
