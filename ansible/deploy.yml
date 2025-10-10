@@ -2,31 +2,36 @@
 - name: Deploy Calculator Docker container
   hosts: app_servers
   become: true
+  vars:
+    docker_image: "avnlk/calculator:latest"
+    container_name: "calculator"
   tasks:
 
     - name: Pull latest calculator image
       community.docker.docker_image:
-        name: avnlk/calculator
-        tag: latest
+        name: "{{ docker_image }}"
         source: pull
 
     - name: Stop calculator container if running
       community.docker.docker_container:
-        name: calculator
+        name: "{{ container_name }}"
         state: stopped
         timeout: 10
+      ignore_errors: yes
 
     - name: Remove old container
       community.docker.docker_container:
-        name: calculator
+        name: "{{ container_name }}"
         state: absent
         force_kill: yes
+      ignore_errors: yes
 
-    - name: Run calculator container (detached)
+    - name: Run calculator container interactively
       community.docker.docker_container:
-        name: calculator
-        image: avnlk/calculator:latest
+        name: "{{ container_name }}"
+        image: "{{ docker_image }}"
         state: started
         restart_policy: unless-stopped
-        command: "tail -f /dev/null"
+        command: "tail -f /dev/null"   
         detach: yes
+        tty: yes
