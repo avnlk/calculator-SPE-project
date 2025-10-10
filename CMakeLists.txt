@@ -13,20 +13,15 @@ list(REMOVE_ITEM CALC_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 # Build the main calculator
 add_executable(calculator src/main.cpp ${CALC_SOURCES})
 
-# Enable testing
-enable_testing()
+# ===== Optional Testing Section =====
+option(BUILD_TESTS "Build unit tests" ON)
 
-# Find Google Test
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
-
-# Add test sources
-file(GLOB TEST_SOURCES "tests/*.cpp")
-
-# Build test executable (without main.cpp)
-add_executable(runTests ${TEST_SOURCES} ${CALC_SOURCES})
-target_link_libraries(runTests GTest::gtest_main pthread)
-
-# Register tests with CTest
-add_test(NAME CalculatorTests COMMAND runTests)
-
+if(BUILD_TESTS)
+    enable_testing()
+    find_package(GTest REQUIRED)
+    include_directories(${GTEST_INCLUDE_DIRS})
+    file(GLOB TEST_SOURCES "tests/*.cpp")
+    add_executable(runTests ${TEST_SOURCES} ${CALC_SOURCES})
+    target_link_libraries(runTests GTest::gtest_main pthread)
+    add_test(NAME CalculatorTests COMMAND runTests)
+endif()
