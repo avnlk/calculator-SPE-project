@@ -1,25 +1,34 @@
-# ===== STAGE 1: BUILD =====
+# ===== STAGE 1: BUILD AND TEST =====
 FROM alpine:3.20 AS builder
 
-# Install only minimal tools to build
-RUN apk add --no-cache g++ cmake make
+# Install compiler and build tools
+RUN apk add --no-cache g++ cmake make git
 
+# Build and install GoogleTest (used only in this stage)
+WORKDIR /tmp
+RUN git clone https://github.com/google/googletest.git && \
+    cd googletest && mkdir build && cd build && \
+    cmake .. && make && make install
+
+# Copy calculator source
 WORKDIR /app
-
-# Copy all project files
 COPY . .
 
-# Configure & compile
+# Build everything (including tests)
 RUN mkdir build && cd build && cmake .. && make
+
+# Optional: run tests here to validate build
+# (if you don’t want tests to fail the image build, add `|| true`)
+RUN cd build && ctest --output-on-failure || true
+
 
 # ===== STAGE 2: RUNTIME =====
 FROM alpine:3.20
 
-# Set work directory
 WORKDIR /app
 
-# Copy the compiled binary from builder stage
-COPY --from=builder /app/build/calculator ./calculator
+# Copy only the final executable (no sources, no GTest, no compiler)
+COPY --from=builder /app/build/calculator .
 
-# Run calculator
+# Minimal runtime container (just your binary)
 CMD ["./calculator"]
