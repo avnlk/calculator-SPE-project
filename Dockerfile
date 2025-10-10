@@ -8,18 +8,16 @@ RUN apk add --no-cache g++ cmake make
 WORKDIR /app
 COPY . .
 
-# Build the calculator executable
-RUN mkdir build && cd build && cmake .. && make
+# Build the calculator as a fully static binary
+RUN mkdir build && cd build && cmake .. && \
+    make calculator LDFLAGS="-static"
 
 # ===== STAGE 2: RUNTIME =====
-FROM alpine:3.20
+FROM scratch
 
 WORKDIR /app
 
-# Install minimal C++ runtime libraries
-RUN apk add --no-cache libstdc++ libgcc
-
-# Copy the built calculator binary
+# Copy the fully static calculator binary
 COPY --from=builder /app/build/calculator .
 
 # Run the calculator
