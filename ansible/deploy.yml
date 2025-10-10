@@ -22,14 +22,11 @@
         state: absent
         force_kill: yes
 
-    - name: Run calculator container
+    - name: Run calculator container (detached)
       community.docker.docker_container:
         name: calculator
         image: avnlk/calculator:latest
         state: started
         restart_policy: unless-stopped
-        command: "/app/calculator"
-        working_dir: "/app"
+        command: "tail -f /dev/null"
         detach: yes
-        tty: yes
-        stdin_open: yes   # required for interactive containers
