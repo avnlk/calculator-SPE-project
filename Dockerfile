@@ -1,38 +1,25 @@
-# =========================
-# Stage 1: Build
-# =========================
-FROM gcc:11 AS builder
+# ===== STAGE 1: BUILD =====
+FROM alpine:3.20 AS builder
 
-# Install required build tools and libraries
-RUN apt-get update && \
-    apt-get install -y cmake make libgtest-dev && \
-    rm -rf /var/lib/apt/lists/*
+# Install only minimal tools to build
+RUN apk add --no-cache g++ cmake make
 
-# Set working directory
 WORKDIR /app
 
 # Copy all project files
 COPY . .
 
-# Build the calculator
+# Configure & compile
 RUN mkdir build && cd build && cmake .. && make
 
-# =========================
-# Stage 2: Runtime
-# =========================
-# Use a super lightweight base image
-FROM debian:bullseye-slim
+# ===== STAGE 2: RUNTIME =====
+FROM alpine:3.20
 
-# Create app directory
+# Set work directory
 WORKDIR /app
 
-# Copy only the final executable (and any runtime dependencies)
+# Copy the compiled binary from builder stage
 COPY --from=builder /app/build/calculator ./calculator
 
-# Install only minimal runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libstdc++6 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Run the calculator app
+# Run calculator
 CMD ["./calculator"]
