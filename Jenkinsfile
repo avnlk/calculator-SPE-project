@@ -32,7 +32,7 @@ pipeline {
             steps {
                 sh '''
                 cd $BUILD_DIR
-                ctest 
+                ./runTests
                 '''
             }
         }
