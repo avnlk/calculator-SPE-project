@@ -13,7 +13,7 @@ list(REMOVE_ITEM CALC_SOURCES "${CMAKE_SOURCE_DIR}/src/main.cpp")
 # Build the main calculator
 add_executable(calculator src/main.cpp ${CALC_SOURCES})
 
-# ===== Optional Testing Section =====
+
 option(BUILD_TESTS "Build unit tests" ON)
 
 if(BUILD_TESTS)
